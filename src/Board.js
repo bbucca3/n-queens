@@ -28,6 +28,19 @@
       this.get(rowIndex)[colIndex] = + !this.get(rowIndex)[colIndex];
       this.trigger('change');
     },
+    
+    ourToggle: function(rowIndex, colIndex) {
+      if (this.get(rowIndex)[colIndex] === 0) {
+        this.get(rowIndex)[colIndex] = 3; 
+        this.trigger('change');
+        return;
+      }
+      if (this.get(rowIndex)[colIndex] === 3) {
+        this.get(rowIndex)[colIndex] = 0; 
+        this.trigger('change');
+        return;
+      } 
+    },
 
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex - rowIndex;
