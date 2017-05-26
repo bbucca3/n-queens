@@ -15,96 +15,59 @@
 
     
 window.findNRooksSolution = function(n) {
+  
+  // initialize openPositionCount to n * n
+  var openPositionCount = n * n;
+  // initialize empty board
   var board = new Board({n: n});
-  var usedRows = [];
-  var usedCols = [];
-  for (let row = 0; row < n; row++) {
-    var rows = board.get(row);
-    for (let col = 0; col < n; col++) {
-      var position = rows[col];
-      if (position !== 1 && !usedRows.includes(row) && !usedCols.includes(col)) {
-        board.togglePiece(row, col);
-        usedRows.push(row);
-        usedCols.push(col);
+  
+  //convertThreesToZero
+  var convertThreesToZero = function () {
+    //iterate through rows, cols
+    for (var row = 0; row < n; row++) {
+      for (var col = 0; col < n; col++) {
+        //resetToOpen every position
+        board.resetToOpen(row, col);
       }
     }
-  }
-  return board;
+  };
   
-  
-  // var board = new Board({n: n});
-  // //iterate over all rows and all elements in each row
-  // var solution = [];
-  // var openPositionCount = n * n;
-  // var checkBoardForOpenPositions = function () {
-  //   for (let i = 0; i < n; i++) {
-  //     var rows = this.get(i);
-  //     for (let j = 0; j < n; j++) {
-  //       var position = rows[j];
-  //       if (position === 0) {
-  //         addRook(position);
-  //         openPositionCount--;
-  //       if (openPositionCount === 0) {
-  //         //call solution functions
-        
-  //           // for (var k = 0; k < board.rows().length; k++) {
-  //           //   var row = board.get(k);
-  //           //   solution.push(row);
-  //           // }
-  //           // solution.convertThrees();
-  //           // return solution;
-  //       }
-  //     }
-  //   }
-  // };
-  
-  // //add rook
-  // var addRook = function (position) {
-  //   // var row = Math.floor(Math.random() * n);
-  //   // var col = Math.floor(Math.random() * n);
-  //   //add rook using position checkBoardForOpenPositions
-  //   var location = checkBoardForOpenPositions();
-  //   board.togglePiece(row, col);
-  //   //update conflict locations with 3's
-    
-  // }
-  
-  // var convertThrees = function () {
-  //   for (let i = 0; i < n; i++) {
-  //     for (let j = 0; j < n; j++) {
-  //       this.ourToggle(i,j);
-  //     }
-  //   }
-  // };
-    
-    //place random rook toggle in locations that are = 0 or "open" 
-    //call ourToggle on rows and cols in rooks path 
-    //if board is closed (0 "open" count = 0)
-      //return solution
-    //if board has opening (0 "open" count > 0)
-      //recur on rook placement 
-  
-  
-  // //create new board with n size
-  // var board = new Board({n: n});
-  // //edit board to add rooks iteratively 
-  // for (var i = 0; i < n; i++) {
-  //   for (var j = 0; j < n; j++) {
-  //     board.togglePiece(i, j);      
-  //   }
-  // }
-  // var matrix = [];
-  // for (var k = 0; k < board.rows().length; k++) {
-  //   var row = board.get(k);
-  //   matrix.push(row);
-  // }
-  // if (!board.hasAnyRooksConflicts()) { 
-  //   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(matrix));
-  //   return matrix;
-  // } else {
-  //   this.findNRooksSolution(n);
-  // }
-
+  // RECURSIVE FUNCTION DECLARATION placePiece (no args, use variables in scope)
+  var placePiece = function () {
+    // iterate through rows, columns 
+    for (var row = 0; row < n; row++) {
+      for (var col = 0; col < n; col++) {
+        // check board at row, col, if 0
+        if (board.get(row)[col] === 0) {
+          // place a piece at that open position (toggle at openRow, openCol)
+          board.togglePiece(row, col);
+          // decrement openPositionCount
+          openPositionCount--;
+          // for every position in the openRow, change any 0 to 3 (for every changed value, decrement openPositionCount)
+          for (var takenRow = 0; takenRow < n; takenRow++) {
+            if (board.markTaken(takenRow, col)) {
+              openPositionCount--;
+            }
+          }
+          // for every position in the openCol, change any 0 to 3 (for every changed value, decrement openPositionCount)
+          for (var takenCol = 0; takenCol < n; takenCol++) {
+            if (board.markTaken(row, takenCol)) {
+              openPositionCount--;
+            }
+          }
+          // if openPositionCount is zero, call convertThreesToZero, return solution (board.rows())
+          if (openPositionCount === 0) {
+            convertThreesToZero();
+            return board.rows();
+          // else recursively call placePiece    
+          } else {
+            return placePiece(); 
+          }
+        }
+      }
+    }
+  };
+  return placePiece();
 };
 
 // return the number of nxn chessboards that exist, with n rooks placed such that none of them can attack each other

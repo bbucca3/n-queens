@@ -29,18 +29,20 @@
       this.trigger('change');
     },
     
-    ourToggle: function(rowIndex, colIndex) {
+    markTaken: function(rowIndex, colIndex) {
       if (this.get(rowIndex)[colIndex] === 0) {
         this.get(rowIndex)[colIndex] = 3; 
         this.trigger('change');
-        return;
+        return true;
       }
+    },
+    resetToOpen: function(rowIndex, colIndex) {
       if (this.get(rowIndex)[colIndex] === 3) {
         this.get(rowIndex)[colIndex] = 0; 
         this.trigger('change');
-        return;
-      } 
-    },
+        return true;
+      }
+    }, 
 
     _getFirstRowColumnIndexForMajorDiagonalOn: function(rowIndex, colIndex) {
       return colIndex - rowIndex;
